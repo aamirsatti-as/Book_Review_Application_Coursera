@@ -1,38 +1,46 @@
 const express = require('express');
+let users = [{ "email": "aamir@gmail.com", "password": "aamir123" }, { "hamza": "hamza@gmail.com", "password": "hamza123" }];
+
 var router = express.Router();
 let books = require('../books/books.js')
-let users = [{"email":"aamir@gmail.com","password":"aamir123"},{"hamza":"hamza@gmail.com","password":"hamza123"}];
-
-
-router.post("/register", (req,res) => {
-    const email = req.body.email;
-    const password = req.body.password;
-  
-  
-    if (email && password) {
-        const validemail=users.filter((user)=>{
-            return user.email=email 
-        })
-      if (!validemail) {
-        users.push({"email":email,"password":password});
-        return res.status(200).json({message: "User successfully registred. Now you can login"});
-      } else {
-        return res.status(404).json({message: "User already exists!"});
-      }
-    }
-    return res.status(404).json({message: "User Already Exists."});
-  });
 
 // Endpoint for getting the List of the Books Available in the Shop
 router.get('/', function (req, res) {
-    //Write your code here
     return res.status(200).send(JSON.stringify(books));
 });
+
+// Endpoint for Registering a User
+router.post("/register", (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
+
+    if (email && password) {
+        const validemail = users.filter((user) => {
+            return user.email = email
+        })
+        if (!validemail) {
+            users.push({ "email": email, "password": password });
+            return res.status(200).json({ message: "User successfully registred. Now you can login" });
+        } else {
+            return res.status(404).json({ message: "User already exists!" });
+        }
+    }
+    return res.status(404).json({ message: "User Already Exists." });
+});
+
+
 
 // Endpoint for getting book detail by ISBN 
 router.get('/bookDetailByisbn/:ISBN', function (req, res) {
     const ISBN = req.params.ISBN;
-    return res.status(200).send(books[ISBN]);
+    const isbn = books.filter((book) => {
+        return book.ISBN == ISBN
+    })
+    if (isbn)
+        return res.status(200).send(books[ISBN]);
+    else
+        return res.status(404).json({ message: "Author Not found" });
 });
 
 // Endpoint for getting book by author name
@@ -61,7 +69,7 @@ router.get('/bookByTitle/:title', function (req, res) {
         return res.status(404).json({ message: "Book Title Not Found" });
 });
 
-// Endpoint for Reviews for a specific book
+// Endpoint for getting Reviews for a specific book
 router.get('/review/:ISBN', function (req, res) {
     //Write your code here
     const isbn = req.params.ISBN;
@@ -78,7 +86,10 @@ router.get('/review/:ISBN', function (req, res) {
 
 function promiseForAllBooks() {
     return new Promise((resolve, reject) => {
-        resolve(books);
+        if (books)
+            resolve(books);
+        else
+            reject("Books not Found");
     })
 }
 
@@ -156,7 +167,7 @@ router.get('/bookByTitle/:title', function (req, res) {
         .then(
             output => res.send(JSON.stringify(output))
         ).catch(err)
-        console.log(err)
+    console.log(err)
 });
 
-module.exports=router
+module.exports = router

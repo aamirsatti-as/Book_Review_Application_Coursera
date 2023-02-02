@@ -5,7 +5,7 @@ const books = require('../books/books.js')
 let users = [{"email":"aamir@gmail.com","password":"aamir123"},{"hamza":"hamza@gmail.com","password":"hamza123"}];
 
 
-//Login Endpoint
+//Login Endpoint for the valid users
 router.post("/valid/login", (req,res) => { 
     const email = req.body.email;
     const password = req.body.password;
@@ -33,7 +33,7 @@ router.post("/valid/login", (req,res) => {
   
 // Endpoint for deleting the book review
 
-router.delete("/valid/bookreview/:ISBN", (req, res) => {
+router.delete("/valid/deletebookreview/:ISBN", (req, res) => {
     const email = req.session.authorization.email;
     const isbn = req.params.ISBN;
     const bookReview = books.filter((book) => {
@@ -50,7 +50,7 @@ router.delete("/valid/bookreview/:ISBN", (req, res) => {
 
 // Endpoint for Giving the book review
 
-router.put("/valid/bookreview/:ISBN", (req, res) => {
+router.put("/valid/givebookreview/:ISBN", (req, res) => {
     const review = req.body.review;
     const isbn = req.params.ISBN;
     const email = req.session.authorization.email;
